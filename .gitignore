@@ -1,0 +1,11 @@
+.idea
+*.iml
+
+.terraform
+*.tfstate
+*.backup
+
+*.txt
+*.log
+*.png
+*.svg
