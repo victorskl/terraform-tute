@@ -9,3 +9,5 @@ terraform apply
 terraform show
 terraform destroy
 ```
+
+- https://hackernoon.com/introduction-to-aws-with-terraform-7a8daf261dc0
