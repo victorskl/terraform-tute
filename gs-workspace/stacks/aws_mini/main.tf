@@ -1,11 +1,7 @@
 terraform {
   required_version = "~> 0.11.6"
 
-  backend "consul" {
-    address = "demo.consul.io"
-    path = "gs-workspace-dooCaifie3Ei"
-    lock = false
-  }
+  backend "s3" {}
 }
 
 locals {
@@ -26,7 +22,7 @@ provider "aws" {
 }
 
 module "common" {
-  //source = "../../modules/common"
-  source = "github.com:victorskl/terraform-tute//gs-workspace/modules/common"
+  source = "../../modules/common"
+  //source = "git::https://github.com/victorskl/terraform-tute.git//gs-workspace/modules/common"
   bucket_name_suffix = "${local.env}"
 }

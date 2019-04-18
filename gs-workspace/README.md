@@ -8,7 +8,6 @@ terraform plan
 terraform apply
 
 (observe s3 console)
-(observe demo.consul.io)
 
 terraform workspace new stag
 terraform workspace list
@@ -16,7 +15,6 @@ terraform plan
 terraform apply
 
 (observe s3 console)
-(observe demo.consul.io)
 
 terraform workspace new prod
 terraform workspace list
@@ -24,7 +22,6 @@ terraform plan
 terraform apply
 
 (observe s3 console)
-(observe demo.consul.io)
 
 terraform workspace show
 terraform workspace select default
@@ -33,7 +30,6 @@ terraform show
 terraform destroy
 
 (observe s3 console)
-(observe demo.consul.io)
 
 terraform workspace select stag
 terraform show
@@ -61,9 +57,16 @@ terraform workspace list
 - https://www.terraform.io/docs/modules/index.html
 - https://www.terraform.io/docs/modules/sources.html
 
+### backend
+
+- To avoid s3 backend interactive config, copy `backend.conf.sample` to `_s3.conf` and configure specific settings there. Note that for first timer, both s3 bucket (with `versioning` enabled) and dynamo db table (with `LockID` string as primary key) must be created prior (one time effort, therefore, use console UI to create them). Then, `terraform init -backend-config="_s3.conf"` to initialize it.
+- https://www.terraform.io/docs/backends/config.html
+- https://www.terraform.io/docs/backends/types/
+- https://www.terraform.io/docs/backends/types/s3.html
+
 ### variables
 
-- To avoid `var.region` prompt every time, `export TF_VAR_region=us-west-1`. Otherwise, `unset TF_VAR_region`.
+- To avoid `var.region` prompt every time, `export TF_VAR_region=us-west-1`. Otherwise, `unset TF_VAR_region`. Alternatively, copy `terraform.tfvars.sample` to `terraform.tfvars` and configure variables there.
 - https://www.terraform.io/docs/commands/environment-variables.html
 - https://www.terraform.io/docs/configuration-0-11/variables.html
 - https://www.terraform.io/docs/configuration-0-11/locals.html

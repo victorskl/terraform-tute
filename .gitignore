@@ -6,7 +6,10 @@
 *.tfstate.backup
 .terraform.tfstate.lock.info
 terraform.tfstate.d
+*.auto.tfvars
+terraform.tfvars
 
+_*.conf
 *.txt
 *.log
 *.png
