@@ -1,3 +1,21 @@
 [submodule "ecs-fargate/terraform-ecs-fargate"]
 	path = ecs-fargate/terraform-ecs-fargate
 	url = https://github.com/bradford-hamilton/terraform-ecs-fargate.git
+[submodule "ecs-fargate/terraform_ecs_fargate_example"]
+	path = ecs-fargate/terraform_ecs_fargate_example
+	url = https://github.com/duduribeiro/terraform_ecs_fargate_example.git
+[submodule "ecs-fargate/anrim-terraform-aws-ecs"]
+	path = ecs-fargate/anrim-terraform-aws-ecs
+	url = https://github.com/anrim/terraform-aws-ecs.git
+[submodule "ecs-fargate/terraform-ecs"]
+	path = ecs-fargate/terraform-ecs
+	url = https://github.com/arminc/terraform-ecs
+[submodule "ecs-fargate/terraform-amazon-ecs"]
+	path = ecs-fargate/terraform-amazon-ecs
+	url = https://github.com/Capgemini/terraform-amazon-ecs
+[submodule "ecs-fargate/ecs-terraform"]
+	path = ecs-fargate/ecs-terraform
+	url = https://github.com/alex/ecs-terraform
+[submodule "ecs-fargate/terraform-aws-ecs"]
+	path = ecs-fargate/terraform-aws-ecs
+	url = https://github.com/terraform-aws-modules/terraform-aws-ecs.git

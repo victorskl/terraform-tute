@@ -2,6 +2,22 @@
 
 AWS ECS Fargate tutorials
 
+## terraform-aws-ecs
+
+Official Terraform Module:
+
+- https://registry.terraform.io/modules/terraform-aws-modules
+- https://github.com/terraform-aws-modules/terraform-aws-ecs
+
+
+## terraform_ecs_fargate_example
+
+Tute from:
+
+- [Easy deploy your Docker applications to AWS using ECS and Fargate](https://thecode.pub/easy-deploy-your-docker-applications-to-aws-using-ecs-and-fargate-a988a1cc842f)
+- https://github.com/duduribeiro/terraform_ecs_fargate_example
+
+
 ## terraform-ecs-fargate
 
 Tute from:
@@ -50,4 +66,26 @@ App:
 ```
 docker run -p 3000:3000 -it --rm --name cbapp bradfordhamilton/crystal_blockchain
 ```
+
+---
+
+## anrim-terraform-aws-ecs
+
+- https://github.com/anrim/terraform-aws-ecs
+
+
+## terraform-ecs
+
+- https://github.com/arminc/terraform-ecs
+
+
+## terraform-amazon-ecs
+
+- https://github.com/Capgemini/terraform-amazon-ecs
+
+
+## ecs-terraform
+
+- https://github.com/alex/ecs-terraform
+
 
