@@ -1,12 +1,13 @@
-# ecs-fargate
+# aws-ecs-fargate
 
 AWS ECS Fargate tutorials
 
 ## terraform-aws-ecs
 
-Official Terraform Module:
+Terraform AWS modules:
 
 - https://registry.terraform.io/modules/terraform-aws-modules
+- https://registry.terraform.io/modules/terraform-aws-modules/ecs/aws/1.3.0
 - https://github.com/terraform-aws-modules/terraform-aws-ecs
 
 
