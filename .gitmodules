@@ -19,3 +19,6 @@
 [submodule "ecs-fargate/terraform-aws-ecs"]
 	path = ecs-fargate/terraform-aws-ecs
 	url = https://github.com/terraform-aws-modules/terraform-aws-ecs.git
+[submodule "ecs-fargate/provision-ecs-cluster-terraform"]
+	path = ecs-fargate/provision-ecs-cluster-terraform
+	url = https://github.com/devops-recipes/provision-ecs-cluster-terraform.git

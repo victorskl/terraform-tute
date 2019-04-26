@@ -30,9 +30,9 @@ Facts:
 
 ### aws-rds-aurora
 
-- https://www.terraform.io/docs/providers/aws/r/rds_cluster.html
 - https://registry.terraform.io/modules/terraform-aws-modules/rds-aurora/aws/1.12.0
 - https://github.com/terraform-aws-modules/terraform-aws-rds-aurora
+- https://www.terraform.io/docs/providers/aws/r/rds_cluster.html
 
 Facts:
 - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.DBInstanceClass.html

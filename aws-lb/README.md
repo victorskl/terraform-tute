@@ -1,0 +1,26 @@
+# aws-lb
+
+### ALB
+
+- https://registry.terraform.io/modules/terraform-aws-modules/alb/aws/3.5.0
+- https://github.com/terraform-aws-modules/terraform-aws-alb
+- (Lack of listener rule?)
+- ...
+- ...
+- https://github.com/terraform-providers/terraform-provider-aws/tree/master/examples/ecs-alb
+- ...
+- ...
+- https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-load-balancing.html
+- https://docs.aws.amazon.com/AmazonECS/latest/developerguide/load-balancer-types.html
+- https://docs.aws.amazon.com/AmazonECS/latest/developerguide/check-service-role.html
+- https://docs.aws.amazon.com/AmazonECS/latest/developerguide/create-application-load-balancer.html
+- ...
+- ...
+- https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html
+- https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html
+- ...
+- ...
+- https://www.terraform.io/docs/providers/aws/r/lb.html
+- https://www.terraform.io/docs/providers/aws/r/lb_listener.html
+- https://www.terraform.io/docs/providers/aws/r/lb_listener_rule.html
+- https://www.terraform.io/docs/providers/aws/r/lb_target_group.html
