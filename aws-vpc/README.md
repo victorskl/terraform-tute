@@ -1,6 +1,7 @@
 # aws-vpc
 
 AWS VPC Scenarios and Examples:
+- https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html
 - https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Scenarios.html
 
 There are 3 options:
@@ -13,3 +14,14 @@ Do [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) unless necessary
 - https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws
 - https://github.com/terraform-aws-modules/terraform-aws-vpc
 
+### aws-default-vpc
+
+- https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html
+- https://aws.amazon.com/premiumsupport/knowledge-center/change-subnet-mask/
+- ...
+- https://www.terraform.io/docs/providers/aws/r/default_vpc.html
+- https://www.terraform.io/docs/providers/aws/r/default_subnet.html
+- https://www.terraform.io/docs/providers/aws/r/default_security_group.html
+- https://www.terraform.io/docs/providers/aws/d/vpc.html
+- https://www.terraform.io/docs/providers/aws/d/subnet_ids.html
+- https://www.terraform.io/docs/providers/aws/d/subnet.html
