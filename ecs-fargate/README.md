@@ -140,4 +140,8 @@ docker run -p 3000:3000 -it --rm --name cbapp bradfordhamilton/crystal_blockchai
 
 - https://github.com/alex/ecs-terraform
 
+---
 
+```
+git submodule update --init --recursive
+```
