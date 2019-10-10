@@ -1,0 +1,4 @@
+bucket = "gsapp-tf-states"
+key = "gsapp/terraform.tfstate"
+region = "ap-southeast-2"
+dynamodb_table = "gsapp-tf-state-lock"

@@ -1,4 +1,0 @@
-bucket = "xampleapp-terraform-states"
-key = "xampleapp/terraform.tfstate"
-region = "ap-southeast-2"
-dynamodb_table = "terraform-state-lock"
