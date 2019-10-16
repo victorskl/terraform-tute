@@ -1,0 +1,14 @@
+EHLO gmail.com
+AUTH LOGIN
+{{stdout_base64_encoded_email_user}}
+{{stdout_base64_encoded_email_password}}
+MAIL FROM: {{someone.tech@gmail.com}}
+RCPT TO: {{someone.tech@gmail.com}}
+DATA
+From: {{someone.tech@gmail.com}}
+To: {{someone.tech@gmail.com}}
+Subject: Amazon SES SMTP Test
+
+This message was sent using the Amazon SES SMTP interface.
+.
+QUIT
