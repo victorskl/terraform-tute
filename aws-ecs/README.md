@@ -1,6 +1,6 @@
-# aws-ecs-fargate
+# aws-ecs
 
-AWS ECS Fargate tutorials
+AWS ECS tutorials. ECS has two launch types: EC2 and Fargate. Fargate is fully managed container orchestration service which is more favourable solution.
 
 ### what is required to run app in ECS Fargate?
 
@@ -142,6 +142,18 @@ docker run -p 3000:3000 -it --rm --name cbapp bradfordhamilton/crystal_blockchai
 
 ---
 
+Update submodule
+
 ```
-git submodule update --init --recursive
+bash upsubmod.sh
+git status
+git add .
+git commit -m "Updated submodule"
 ```
+
+Move submodule
+```
+git mv ecs-fargate aws-ecs
+```
+
+https://stackoverflow.com/questions/4526910/rename-a-git-submodule
