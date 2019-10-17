@@ -14,7 +14,7 @@ This tute will test sending email through SES SMTP.
     terraform output
     ```
 
-2. Next, we need to verify an email address for SES identity purpose. Because, by default, SES account is in [Sandbox mode](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/request-production-access.html). It goes like this.
+2. Next, we need to [verify an email address for SES identity](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/verify-email-addresses-procedure.html) purpose. Because, by default, SES account is in [Sandbox mode](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/request-production-access.html). It goes like this.
 
     ```
     aws iam list-users
@@ -54,3 +54,57 @@ This tute will test sending email through SES SMTP.
     aws iam list-users
     terraform destroy
     ```
+
+## GSuite, DMARC, SPF and DKIM
+
+Assume you use GSuite GMail for your domain email solution. From above quick tute, it should have worked out. However. In most production setup, we will need to tackle SES SMTP to work well with GSuite GMail [Spam settings](https://support.google.com/a/topic/2683828).
+
+Typical GSuite GMail production setup probably have turned on DMARC, SPF and DKIM as part of best practices. The followings are resources for how to set this up, if not yet done so. In a nutshell, it has to add a couple of TXT DNS records into your domain.
+- [DMARC Overview](https://dmarc.org/overview/)
+- GSuite [GMail DMARC](https://support.google.com/a/answer/2466580)
+- [Set up DKIM to prevent email spoofing](https://support.google.com/a/answer/174124)
+- [Help prevent email spoofing with SPF records](https://support.google.com/a/answer/33786)
+- [GMail Postmaster tool](https://gmail.com/postmaster/)
+
+So. 
+
+Assume you already have added TXT records for SPF, DKIM and have turned on DMARC. You can use `dig` to explore these DNS resource records.
+```
+dig -t mx mydomain.com
+dig -t txt mydomain.com
+dig -t txt _dmarc.mydomain.com
+```
+
+Observe that, you find TXT records like the followings. It basically means your domain email policy is in **strict** email authentication mode. At DMARC TXT record, the part `p=reject; aspf=s; adkim=s` says that both SPF and DKIM are in **strict** checking and reject email otherwise.
+```
+"v=DKIM1; k=rsa;" ... 
+"v=spf1 include:_spf.google.com  ... -all"
+"v=DMARC1; p=reject; aspf=s; adkim=s"
+```
+
+In SES side, the following guideline describe how to setup SES email authentication.
+
+- [Authenticating Your Email in Amazon SES](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/authentication.html)
+    - [Authenticating Email with SPF in Amazon SES](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/spf.html)
+    - [Authenticating Email with DKIM in Amazon SES](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/dkim.html)
+    - [Complying with DMARC Using Amazon SES](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/dmarc.html)
+
+Note one caveat that, the [Complying with DMARC Using Amazon SES](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/dmarc.html) guide suggest to remove strict mode `aspf=s; adkim=s` tag. However. You do not need to. You can still keep DMARC in strict mode if you like. Just make sure to setup DKIM and SPF properly.
+
+### TL;DR
+
+Especially, pay attention to SPF and DKIM TXT records. Most of the time, if you want GSuite hosted GMail to work well with email sending from SES SMTP, you should [verify your domain as an identity in SES](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/verify-domain-procedure.html) and, generate DKIM and [populate DKIM TXT records](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/easy-dkim-setup-domain.html) accordingly.
+
+And your SPF TXT record should something like:
+
+```
+"v=spf1 include:_spf.google.com  include:amazonses.com -all"
+```
+
+#### Custom MAIL FROM
+
+Iff, for some reason, having `include:amazonses.com` SPF TXT record is an issue in your root domain, then you probably need to do  [Setting Up a Custom MAIL FROM Domain](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/mail-from.html). Normally, this is the case for scenarios like:
+- when you have to setup sub-zone for your domain, and deploy your application there 
+- a host (hostname or subdomain) requires to send out emails
+
+Even then, this is totally optional. Do as you see fit for your purpose.
