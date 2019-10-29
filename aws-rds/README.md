@@ -52,13 +52,17 @@ Similarly for Aurora; you could write from scratch using [`aws_rds_cluster`](htt
 
 ### serverless
 
-When you are creating RDBMS cluster either by: 
-1. creating a bunch of `aws_db_instance` resources and network them up together yourself 
-2. or using managed Aurora service through creating `aws_rds_cluster` resource
+Say, you are creating a RDBMS cluster either by: 
 
-You will end up a few db instances up and running in a cluster. Depends on stochastic user load, there might be a need for scaling up or down of these db instances. You might also want to autonomously mange on these scaling events. This is something to reckon with [AWS Auto Scaling](https://aws.amazon.com/autoscaling/). 
+1. creating a bunch of EC2 instances, install your choice of RDBMS and network/cluster them up together yourself (_good old classic approach!_)
 
-However, if you can limit yourself with Aurora service, it provides this feature with [engine mode `serverless`](https://www.terraform.io/docs/providers/aws/r/rds_cluster.html#engine_mode).
+2. or creating a bunch of `aws_db_instance` resources and network them up together yourself (_only in principal, don't do it!_)
+
+3. or creating [High Availability (Multi-AZ) for Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html), of which in terraform equivalent, resource creation `aws_db_instance` with [`multi_az`](https://www.terraform.io/docs/providers/aws/r/db_instance.html#multi_az) flag (also the same flag if using [module](https://registry.terraform.io/modules/terraform-aws-modules/rds/aws/1.28.0#inputs)). 
+
+Anyhow, you will end up a few db instances up and running in a cluster. Depends on stochastic user load, there might be a need for scaling up or down of these db instances. You might also want to autonomously mange on these scaling events. This is something to reckon with [AWS Auto Scaling](https://aws.amazon.com/autoscaling/). 
+
+If you can limit yourself with Aurora service, it provides a feature engine mode [`serverless`](https://www.terraform.io/docs/providers/aws/r/rds_cluster.html#engine_mode). With `serverless` mode, you can forget about how Aurora will be scaling and focus on your development. Theoretically, (if no user load or) it should bill per-request or per-query execution level with set minimum threshold for charges. However, cons are Cold start Vs Warm start and, how your App compensate on this. Great for testing/development purpose though! Production, ummm, autoscaling might have a bit more control, I reckon!
 
 - https://aws.amazon.com/rds/aurora/serverless/
 - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html
@@ -67,6 +71,14 @@ Articles:
 - [Aurora Serverless: The Good, the Bad and the Scalable](https://www.jeremydaly.com/aurora-serverless-the-good-the-bad-and-the-scalable/)
 - [Up and running with Aurora Serverless](https://lobster1234.github.io/2019/04/22/serverless-aurora-rds/)
 - [Amazon Aurora Serverless — Features, Limitations, Glitches](https://medium.com/searce/amazon-aurora-serverless-features-limitations-glitches-d07f0374a2ab)
+
+### autoscaling
+
+Alternatively, you could also use the managed Aurora service `aws_rds_cluster` with [Application Autoscaling](https://docs.aws.amazon.com/autoscaling/application/userguide/what-is-application-auto-scaling.html) `aws_appautoscaling_target`, `aws_appautoscaling_policy` as example in [Aurora Read Replica Autoscaling](https://www.terraform.io/docs/providers/aws/r/appautoscaling_policy.html#aurora-read-replica-autoscaling). 
+
+Depends on situation, deploying this way might be a bit more complex but has more control. Highly recommend to utilise the Aurora module [here](https://registry.terraform.io/modules/terraform-aws-modules/rds-aurora/aws/1.12.0), [here](https://github.com/terraform-aws-modules/terraform-aws-rds-aurora/blob/v1.12.0/examples/advanced/main.tf) and [here](https://github.com/terraform-aws-modules/terraform-aws-rds-aurora/blob/v1.12.0/main.tf#L105) for starter!
+
+>Note though, **Stateful** autoscaling is always challenging in practise!
 
 ## backup
 
