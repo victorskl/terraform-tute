@@ -77,7 +77,9 @@ Reading:
 - If you select No, Amazon RDS will not assign a public IP address to the DB instance, and no EC2 instance or devices outside of the VPC will be able to connect. 
 - If you select Yes, you must also select one or more VPC security groups that specify which EC2 instances and devices can connect to the DB instance. EC2 instances and devices outside of the VPC hosting the DB instance will connect to the DB instances. 
 
-However, allowing `Public Accessibility` is not always needed and, not best practice! You should have EC2 _jump-start_ or _bastion_ VM host spin up in the same VPC as DB instance and, access your RDS DB instance from there. Or, make a DB dump to S3 bucket and reconstruct it in your local desktop. Other option includes [Amazon Workspaces](https://aws.amazon.com/workspaces/). 
+However, allowing `Public Accessibility` is not always needed and, not best practice! You should have EC2 _bastion host_ spin up in the same VPC as DB instance and, access your RDS DB instance from there. Or, make a DB dump to S3 bucket and reconstruct it in your local desktop. Other option includes [Amazon Workspaces](https://aws.amazon.com/workspaces/). 
+
+> If you ever need to enable `Public Accessibility` for debugging purpose then make sure to disable back after use. 
 
 
 ## Operational
@@ -144,6 +146,7 @@ Reading:
 - Your Amazon RDS backup storage for each region is composed of 
     1. the **automated backups** and 
     2. **manual DB snapshots** for that region.
+- See [Automatic Backups and Database Snapshots](https://aws.amazon.com/rds/faqs/#Automatic_Backups_and_Database_Snapshots) FAQ for differences.
 
 ### Backup storage    
 - Your backup storage is equivalent to the sum of the database storage for all instances in that region.
@@ -155,17 +158,19 @@ Reading:
 - Database snapshots are user-initiated backups of your instance [stored in Amazon S3](https://aws.amazon.com/rds/details/backup/) that are kept until you explicitly delete them. 
 - You can create a new instance from a database snapshots whenever you desire.
 
-### Snapshots
-- The first snapshot of a DB instance contains the data for the full DB instance. Subsequent snapshots of the same DB instance are incremental.
-
 ### Automated backups
 - **Automated backups** occur **DAILY** during the **preferred backup window**. If the backup requires more time than allotted to the backup window, the backup continues after the window ends, until it finishes.
 - The backup window can't overlap with the weekly maintenance window for the DB instance.
-
-### Retention period
+- The first (automated backup) snapshot of a DB instance contains the data for the full DB instance. Subsequent snapshots of the same DB instance are incremental. Offer fine grain Point-In-Time recovery.
 - **Backup retention period** can be set between 0 and 35 days when you create a DB instance.
 - Setting the backup retention period to 0 disables automated backups.
 - An outage occurs if you change the backup retention period from 0 to a non-zero value or from a non-zero value to 0.
+
+### Manual snapshots
+- You can create manual DB snapshot at any point in time through RDS Console UI or CLI or [AWS Backup](../aws-backup).
+- RDS backups through [AWS Backup](../aws-backup) mechanism also are treated as _manual_ snapshots.
+- These manual (user-initiated) snapshots are always full DB instance backups, contrary to incremental in automated backups. _(By observation)_
+
 
 ### TL;DR RDS backups
 
@@ -190,3 +195,33 @@ What if, we wanted to have a specific backup schedule policy? Say, monthly backu
 However.
 
 For most cases, you should utilise [AWS Backup](https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html) for a more streamlined centralized consolidated backups. For this, peak into [aws-backup](../aws-backup).
+
+### Recovery
+
+There are 3 options to [restore RDS databases](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_CommonTasks.BackupRestore.html):
+
+1. [Restoring from a DB Snapshot](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RestoreFromSnapshot.html) -- [`aws rds restore-db-instance-from-db-snapshot help`](https://docs.aws.amazon.com/cli/latest/reference/rds/restore-db-instance-from-db-snapshot.html)
+    
+2. [Restoring a DB Instance to a Specified Time](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIT.html) -- [`aws rds restore-db-instance-to-point-in-time help`](https://docs.aws.amazon.com/cli/latest/reference/rds/restore-db-instance-to-point-in-time.html)
+
+3. [Restore DB instance from S3](https://docs.aws.amazon.com/cli/latest/reference/rds/restore-db-instance-from-s3.html)
+
+Note though that **Point-in-Time Recovery** is only available when you have enabled automated backups option. If you have only performed snapshot backups (this include AWS Backup -- because AWS Backup perform a snapshot backup as background service i.e. `"SnapshotType": "awsbackup"`), then you can only do restore from a DB snapshot.
+
+Also [note these](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RestoreFromSnapshot.html):
+> * Amazon RDS creates a storage volume snapshot of your DB instance, backing up the entire DB instance and not just individual databases. 
+> * You can't restore from a DB snapshot to an existing DB instance; a new DB instance is created when you restore.
+
+There are few recovery strategies:
+
+* Restore from a snapshot which will create a new RDS DB instance, then update your Application config to reflect this new RDS DB instance endpoint. _(you don't want this!)_
+* [Create a new RDS DB instance with temporary name](https://stackoverflow.com/questions/24278220/amazon-rds-restore-snapshot-to-existing-instance), create a SQL dump from this temporary DB instance, then restore it into the original DB instance.
+* Stop all connections to master DB instance, [rename original DB instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RenameInstance.html#USER_RenameInstance.RR) and, [name the new DB instance with original name](https://aws.amazon.com/blogs/aws/endpoint-renaming-for-amazon-rds/) and restore it from the snapshot.
+
+Also [note that](https://acloud.guru/forums/aws-certified-solutions-architect-associate/discussion/-KcVAbXwQAAoB17SNyPw/why_restoring_the_from_a_snaph):
+> * Apart from the name you assign the instance, the endpoint will remain the same - the 'random' string in it is tied to your account.
+
+```
+mydbinstancename.<account-wise-random-string>.<region>.rds.amazonaws.com
+```
+
