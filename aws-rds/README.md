@@ -74,8 +74,8 @@ Reading:
 > AWS Console > RDS > select DB Instance > Security > Public accessibility > No/Yes
 
 - Select Yes if you want EC2 instances and devices outside of the VPC hosting the DB instance to connect to the DB instance.
+- If you select Yes, you must also select one or more VPC security groups that specify which EC2 instances and devices can connect to the DB instance.
 - If you select No, Amazon RDS will not assign a public IP address to the DB instance, and no EC2 instance or devices outside of the VPC will be able to connect. 
-- If you select Yes, you must also select one or more VPC security groups that specify which EC2 instances and devices can connect to the DB instance. EC2 instances and devices outside of the VPC hosting the DB instance will connect to the DB instances. 
 
 However, allowing `Public Accessibility` is not always needed and, not best practice! You should have EC2 _bastion host_ spin up in the same VPC as DB instance and, access your RDS DB instance from there. Or, make a DB dump to S3 bucket and reconstruct it in your local desktop. Other option includes [Amazon Workspaces](https://aws.amazon.com/workspaces/). 
 
@@ -83,6 +83,9 @@ However, allowing `Public Accessibility` is not always needed and, not best prac
 
 
 ## Operational
+
+Reading:
+- [Best Practices for Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_BestPractices.html)
 
 ### Storage
 

@@ -1,9 +1,11 @@
 # aws-ses
 
+> [As of 30 Oct 2019, SES is also available in Sydney region!](https://forums.aws.amazon.com/thread.jspa?threadID=286092)
+
 This tute will test sending email through SES SMTP.
 
 
-1. You can follow instruction from [Using the Amazon SES SMTP Interface to Send Email](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/send-email-smtp.html) to setup through Console. But the terraform script is pretty much automated about this part of setup. So.
+1. You can follow instruction from [Using the Amazon SES SMTP Interface to Send Email](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/send-email-smtp.html) to setup through Console. But the terraform script is pretty much automated about this part of setup. Basically, it needs an IAM user with `ses:SendRawEmail` permission. So.
 
     ```
     cd aws-ses
