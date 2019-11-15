@@ -139,47 +139,13 @@ Depends on situation, deploying this way might be a bit more complex but has mor
 >Note though, **Stateful** autoscaling is always challenging in practise!
 
 
-## Backup
+## Backups
 
-Reading:
-- [Amazon RDS Backup and Restore](https://aws.amazon.com/rds/details/backup/)
-- [Working With Backups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html)
-
-### Type of backups
-- Your Amazon RDS backup storage for each region is composed of 
-    1. the **automated backups** and 
-    2. **manual DB snapshots** for that region.
-- See [Automatic Backups and Database Snapshots](https://aws.amazon.com/rds/faqs/#Automatic_Backups_and_Database_Snapshots) FAQ for differences.
-
-### Backup storage    
-- Your backup storage is equivalent to the sum of the database storage for all instances in that region.
-- There is [no additional charge](https://aws.amazon.com/rds/postgresql/pricing/) for backup storage up to 100% of your total database storage for a region.
-    > For example, if you have an active PostgreSQL instance with 500 GiB-month of provisioned database storage and an active MySQL DB instance with 200 GiB-month of provisioned database storage, we provide up to 700 GiB-month of backup storage at no additional charge.
-- After the DB instance is terminated, backup storage is billed at `$0.095` per GiB-month.
-- Additional backup storage is `$0.095` per GiB-month.
-- By default, Amazon RDS creates and saves automated backups of your DB instance securely in [Amazon S3](https://aws.amazon.com/rds/details/backup/) for a user-specified retention period.
-- Database snapshots are user-initiated backups of your instance [stored in Amazon S3](https://aws.amazon.com/rds/details/backup/) that are kept until you explicitly delete them. 
-- You can create a new instance from a database snapshots whenever you desire.
-
-### Automated backups
-- **Automated backups** occur **DAILY** during the **preferred backup window**. If the backup requires more time than allotted to the backup window, the backup continues after the window ends, until it finishes.
-- The backup window can't overlap with the weekly maintenance window for the DB instance.
-- The first (automated backup) snapshot of a DB instance contains the data for the full DB instance. Subsequent snapshots of the same DB instance are incremental. Offer fine grain Point-In-Time recovery.
-- **Backup retention period** can be set between 0 and 35 days when you create a DB instance.
-- Setting the backup retention period to 0 disables automated backups.
-- An outage occurs if you change the backup retention period from 0 to a non-zero value or from a non-zero value to 0.
-
-### Manual snapshots
-- You can create manual DB snapshot at any point in time through RDS Console UI or CLI or [AWS Backup](../aws-backup).
-- RDS backups through [AWS Backup](../aws-backup) mechanism also are treated as _manual_ snapshots.
-- These manual (user-initiated) snapshots are always full DB instance backups, contrary to incremental in automated backups. _(By observation)_
-
-
-### TL;DR RDS backups
+### TL;DR
 
 So.
 
-By default, RDS _built-in_ automated backup and retention gives you, a daily database backup with retention (keep the backup) upto maximum 35 days. Then, it will expires (rotate) from the oldest in the backups stack, probably.
+By default, RDS _built-in_ automated backup and retention gives you, a daily database backup with retention upto maximum 35 days. Then, it will rotate.
 
 In terraform these translate to setting up two arguments:
 
@@ -193,33 +159,71 @@ For `aws_rds_cluster`:
 
 So. 
 
-What if, we wanted to have a specific backup schedule policy? Say, monthly backups with 6 months rotation. We could write a custom script (probably in Python with Boto) to create/execute a RDS DB snapshot at specific schedule time. The script could be outside of AWS (i.e. remotely executing through API) or [Lambda with EventBridge](https://docs.aws.amazon.com/eventbridge/latest/userguide/what-is-amazon-eventbridge.html).
+What if, we wanted to have a specific backup schedule policy? Say, monthly backups with 6 months rotation. We could write a custom script (probably in Python with Boto or bash script wrap around `awscli`) to create a RDS DB _manual_ snapshot at specific schedule time. This script could be outside of AWS (i.e. remotely executing through API) or [Lambda with EventBridge](https://docs.aws.amazon.com/eventbridge/latest/userguide/what-is-amazon-eventbridge.html).
 
 However.
 
 For most cases, you should utilise [AWS Backup](https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html) for a more streamlined centralized consolidated backups. For this, peak into [aws-backup](../aws-backup).
 
-### Recovery
+### Type of backups
+- Your Amazon RDS backup storage for each region is composed of 
+    1. the **Automated Backups** and 
+    2. **Manual DB Snapshots** for that region.
+- Automated backups are limited to a single AWS Region while manual snapshots (and Read Replicas) are supported across multiple Regions - (ref [source](https://aws.amazon.com/blogs/database/implementing-a-disaster-recovery-strategy-with-amazon-rds/)).
+- Automated backups and manual snapshots are stored in an S3 bucket that is owned and managed by the Amazon RDS service. Hence, you are not able to see them from your Amazon S3 console - (ref [source](https://aws.amazon.com/blogs/database/implementing-a-disaster-recovery-strategy-with-amazon-rds/)).
+- See [Automatic Backups and Database Snapshots](https://aws.amazon.com/rds/faqs/#Automatic_Backups_and_Database_Snapshots) FAQ for differences.
+- Reading:
+    - [Amazon RDS Backup and Restore](https://aws.amazon.com/rds/details/backup/)
+    - [Working With Backups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html)
+
+### Backup storage    
+- Your backup storage is equivalent to the sum of the database storage for all instances in that region.
+- There is [no additional charge](https://aws.amazon.com/rds/postgresql/pricing/) for backup storage up to 100% of your total database storage for a region.
+    > For example, if you have an active PostgreSQL instance with 500 GiB-month of provisioned database storage and an active MySQL DB instance with 200 GiB-month of provisioned database storage, we provide up to 700 GiB-month of backup storage at no additional charge.
+- After the DB instance is terminated, backup storage is billed at `$0.095` per GiB-month.
+- Additional backup storage is `$0.095` per GiB-month.
+- By default, Amazon RDS creates and saves automated backups of your DB instance securely in [Amazon S3](https://aws.amazon.com/rds/details/backup/) for a user-specified retention period.
+- Database snapshots are user-initiated backups of your instance [stored in Amazon S3](https://aws.amazon.com/rds/details/backup/) that are kept until you explicitly delete them. 
+- You can create a new instance from a database snapshots whenever you desire.
+
+### Automated backups
+> When automated backups are turned on for your DB instance, Amazon RDS automatically performs a full daily snapshot of your data. The snapshot occurs during your preferred backup window. It also captures transaction logs to Amazon S3 every 5 minutes (as updates to your DB instance are made). Archiving the transaction logs is an important part of your DR process and PITR. When you initiate a point-in-time recovery, transactional logs are applied to the most appropriate daily backup in order to restore your DB instance to the specific requested time. - (ref [source](https://aws.amazon.com/blogs/database/implementing-a-disaster-recovery-strategy-with-amazon-rds/))
+
+- **Automated backups** occur **DAILY** during the **preferred backup window**. If the backup requires more time than allotted to the backup window, the backup continues after the window ends, until it finishes.
+- The backup window can't overlap with the weekly maintenance window for the DB instance.
+- The first (automated backup) snapshot of a DB instance contains the data for the full DB instance. Subsequent snapshots of the same DB instance are incremental ([5 minutes transaction logs backup to S3](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIT.html)). Offer fine grain _Point-In-Time_ recovery.
+- **Backup retention period** can be set between 0 and 35 days when you create a DB instance.
+- Setting the backup retention period to 0 disables automated backups.
+- An outage occurs if you change the backup retention period from 0 to a non-zero value or from a non-zero value to 0.
+
+### Manual snapshots
+- You can create manual DB snapshot at any point in time through RDS Console UI or CLI or [AWS Backup](../aws-backup).
+- RDS backups through [AWS Backup](../aws-backup) mechanism also are treated as _manual_ snapshots.
+- These manual (user-initiated) snapshots are always **full DB instance** backups, contrary to incremental in automated backups.
+
+## Recovery
 
 There are 3 options to [restore RDS databases](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_CommonTasks.BackupRestore.html):
 
-1. [Restoring from a DB Snapshot](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RestoreFromSnapshot.html) -- [`aws rds restore-db-instance-from-db-snapshot help`](https://docs.aws.amazon.com/cli/latest/reference/rds/restore-db-instance-from-db-snapshot.html)
-    
-2. [Restoring a DB Instance to a Specified Time](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIT.html) -- [`aws rds restore-db-instance-to-point-in-time help`](https://docs.aws.amazon.com/cli/latest/reference/rds/restore-db-instance-to-point-in-time.html)
-
+1. [Restoring from a DB Snapshot](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RestoreFromSnapshot.html) 
+    - [`aws rds restore-db-instance-from-db-snapshot help`](https://docs.aws.amazon.com/cli/latest/reference/rds/restore-db-instance-from-db-snapshot.html)
+2. [Restoring a DB Instance to a Specified Time](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIT.html) 
+    - [`aws rds restore-db-instance-to-point-in-time help`](https://docs.aws.amazon.com/cli/latest/reference/rds/restore-db-instance-to-point-in-time.html)
 3. [Restore DB instance from S3](https://docs.aws.amazon.com/cli/latest/reference/rds/restore-db-instance-from-s3.html)
 
-Note though that **Point-in-Time Recovery** is only available when you have enabled automated backups option. If you have only performed snapshot backups (this include AWS Backup -- because AWS Backup perform a snapshot backup as background service i.e. `"SnapshotType": "awsbackup"`), then you can only do restore from a DB snapshot.
+Note though that **Point-in-Time Recovery** is only available when you have enabled automated backups option. If you have only performed snapshot backups (this include AWS Backup -- because AWS Backup perform a full snapshot backup as background service i.e. `"SnapshotType": "awsbackup"`), then you can only do restore from a DB snapshot.
 
 Also [note these](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RestoreFromSnapshot.html):
 > * Amazon RDS creates a storage volume snapshot of your DB instance, backing up the entire DB instance and not just individual databases. 
 > * You can't restore from a DB snapshot to an existing DB instance; a new DB instance is created when you restore.
 
+### Recovery strategies
+
 There are few recovery strategies:
 
 * Restore from a snapshot which will create a new RDS DB instance, then update your Application config to reflect this new RDS DB instance endpoint. _(you don't want this!)_
 * [Create a new RDS DB instance with temporary name](https://stackoverflow.com/questions/24278220/amazon-rds-restore-snapshot-to-existing-instance), create a SQL dump from this temporary DB instance, then restore it into the original DB instance.
-* Stop all connections to master DB instance, [rename original DB instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RenameInstance.html#USER_RenameInstance.RR) and, [name the new DB instance with original name](https://aws.amazon.com/blogs/aws/endpoint-renaming-for-amazon-rds/) and restore it from the snapshot.
+* Stop all connections to master DB instance, [rename original DB instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RenameInstance.html#USER_RenameInstance.RR) and, [name the new DB instance with original name](https://aws.amazon.com/blogs/aws/endpoint-renaming-for-amazon-rds/) and restore it from the snapshot. Example in [Recovery Quickstart](../aws-backup).
 
 Also [note that](https://acloud.guru/forums/aws-certified-solutions-architect-associate/discussion/-KcVAbXwQAAoB17SNyPw/why_restoring_the_from_a_snaph):
 > * Apart from the name you assign the instance, the endpoint will remain the same - the 'random' string in it is tied to your account.
@@ -228,3 +232,76 @@ Also [note that](https://acloud.guru/forums/aws-certified-solutions-architect-as
 mydbinstancename.<account-wise-random-string>.<region>.rds.amazonaws.com
 ```
 
+### Restoring from a DB Snapshot
+
+> Restore steps only, regardless of which recovery strategies you choose
+
+1. Determine all RDS DB instances
+   ```
+   aws rds describe-db-instances
+   ```
+2. Determine the current RDS DB instance parameters, security group, VPC, subnet, etc...
+   ```
+   aws rds describe-db-instances --db-instance-identifier myappdbprod
+   ```
+3. Determine all RDS DB snapshots
+   ```
+   aws rds describe-db-snapshots
+   ```
+4. Determine the current RDS DB instance snapshots
+   ```
+   aws rds describe-db-snapshots --db-instance-identifier myappdbprod
+   ```
+5. Then, run restore from DB snapshot command as follows.
+    ```
+    aws rds restore-db-instance-from-db-snapshot \
+      --db-instance-identifier myappdbprod \
+      --db-snapshot-identifier awsbackup:job-66de8820-dc2f-4948-9a1b-8c4d6a4e91b0 \
+      --vpc-security-group-ids sg-0993ba0e942e9cc99 \
+      --db-subnet-group-name myappdbprod-20190929232242395400000002 \
+      --db-parameter-group-name myappdbprod-20190929232242385100000001 \
+      --no-publicly-accessible \
+      --enable-cloudwatch-logs-exports "postgresql" "upgrade"
+    ```
+
+### Restoring a DB Instance to a Specified Time
+
+> Restore steps only, regardless of which recovery strategies you choose
+
+> Restores a DB instance to an arbitrary point in time. You can restore to any point in time before the time identified by the `LatestRestorableTime` property.
+
+> You can restore to a point up to the number of days specified by the `BackupRetentionPeriod` property.
+
+1. Determine latest restore time for the current DB instance
+   ```
+   aws rds describe-db-instances --db-instance-identifier myappdbprod | grep LatestRestorableTime
+   ```
+2. Determine retention period in days
+   ```
+   aws rds describe-db-instances --db-instance-identifier myappdbprod | grep BackupRetentionPeriod
+   ```
+3. Determine `RestoreWindow` for `EarliestTime` and `LatestTime`
+   ```
+   aws rds describe-db-instance-automated-backups --db-instance-identifier myappdbprod
+   ```
+4. Restore to a point in time between `LatestRestorableTime` (minus all the way) back to `BackupRetentionPeriod`. You do the Maths and, of course if you have enough backups to rewind upto this retention point. Alternatively, easy put, any point in time you observed from `RestoreWindow` in step 3. 
+   ```
+   aws rds restore-db-instance-to-point-in-time \
+    --source-db-instance-identifier myappdbprod \
+    --target-db-instance-identifier panelappdbtest \
+    --vpc-security-group-ids sg-0763ba0e942e9cc37 \
+    --db-subnet-group-name myappdbprod-20190929232242395400000002 \
+    --db-parameter-group-name myappdbprod-20190929232242385100000001 \
+    --no-publicly-accessible \
+    --restore-time 2019-11-15T01:00:00Z \
+    --enable-cloudwatch-logs-exports "postgresql" "upgrade"
+        {
+            "DBInstance": {
+                "DBInstanceIdentifier": "myappdbtest",
+                "DBInstanceClass": "db.t2.micro",
+                "Engine": "postgres",
+                "DBInstanceStatus": "creating",
+                ...
+            }
+        }
+   ```
