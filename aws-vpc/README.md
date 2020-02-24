@@ -17,6 +17,8 @@ Do [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) unless necessary
 ### aws-default-vpc
 
 - https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html
+- https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Scenario1.html
+- https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Scenario2.html
 - https://aws.amazon.com/premiumsupport/knowledge-center/change-subnet-mask/
 - ...
 - https://www.terraform.io/docs/providers/aws/r/default_vpc.html

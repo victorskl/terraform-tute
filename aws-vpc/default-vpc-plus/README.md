@@ -55,3 +55,10 @@ private_subnets = [
     subnet-0649200f9dd1f51b9
 ]
 ```
+
+### CodeBuild / Lambda within a VPC
+
+- https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html
+- https://docs.aws.amazon.com/codebuild/latest/userguide/vpc-support.html
+- https://aws.amazon.com/blogs/devops/access-resources-in-a-vpc-from-aws-codebuild-builds/
+- https://stackoverflow.com/questions/52033869/download-source-failed-aws-codebuild
