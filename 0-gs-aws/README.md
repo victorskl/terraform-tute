@@ -1,6 +1,6 @@
-# terrform-tute
+# 0-gs-aws
 
-Getting started from https://learn.hashicorp.com/terraform/getting-started/install
+Simple getting started Terraform with AWS as provider from https://learn.hashicorp.com/terraform/getting-started/install
 
 ```
 terraform init

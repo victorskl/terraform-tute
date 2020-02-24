@@ -1,4 +1,6 @@
-# getting-started
+# 0-gs-aws-advanced
+
+Getting started Terraform with AWS as provider - Advanced track
 
 This will be a [steep takeoff](https://www.youtube.com/results?search_query=steep+takeoff)!! You will learn Terraform key fundamental concepts:
 1. workspace
@@ -86,7 +88,7 @@ aws dynamodb describe-table --table-name gsapp-tf-state-lock
 The `gsapp` is an example stack which will simply provision a S3 bucket.
 
 ```
-cd 0-getting-started/stacks/gsapp
+cd 0-gs-aws-advanced/stacks/gsapp
 
 (initialise terraform interactively)
 terraform init
