@@ -2,8 +2,10 @@
 
 - [Amazon EC2 Instance Types](https://aws.amazon.com/ec2/instance-types/)
 - [Amazon Machine Images (AMI)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html)
-- [Linux AMI Virtualization Types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/virtualization_types.html) -- _basically, point-blank take away as just use HVM_
-- [Finding a Linux AMI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html) -- _not so helpful, ya know! listing a bunch!_
+    - [AMI Types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ComponentsAMIs.html) -- [EBS-Backed](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami-ebs.html) or [Instance Store-Backed](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami-instance-store.html)
+- [Linux AMI Virtualization Types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/virtualization_types.html)
+    - HVM(hardware virtual machine) or PV(paravirtual)
+- [Finding a Linux AMI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html)
 - [Amazon Linux](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/amazon-linux-ami-basics.html)
     - **Old** [Amazon Linux AMI](https://aws.amazon.com/amazon-linux-ami/)
     - [Amazon Linux 2](https://aws.amazon.com/amazon-linux-2/) -- _use this!_
@@ -53,10 +55,17 @@ Otherwise, read also:
 - [General Prerequisites for Connecting to Your Instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/connection-prereqs.html)
 - [Set Up EC2 Instance Connect](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-set-up.html)
 - [Connect Using EC2 Instance Connect](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-connect-methods.html)
+- [Connecting to Your Linux Instance Using Session Manager](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/session-manager.html)
 
+### Multiple NICs
 
----
+- https://www.terraform.io/docs/providers/aws/r/instance.html#network-interfaces
+- https://www.terraform.io/docs/providers/aws/r/network_interface.html
+- https://www.terraform.io/docs/providers/aws/r/network_interface_attachment.html
+- https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/MultipleIP.html
+- https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html
 
+## Pricing
 
 - [Spot Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html)
 - [On-Demand Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-on-demand-instances.html)
@@ -82,3 +91,9 @@ t3a.micro 2 Variable  1 GiB   EBS Only  $0.0119 per Hour
 t2.nano   1 Variable  0.5 GiB EBS Only  $0.0073 per Hour
 t2.micro  1 Variable  1 GiB   EBS Only  $0.0146 per Hour
 ```
+
+## EBS
+
+- https://aws.amazon.com/ebs/
+- [What’s the difference between an AMI and EBS snapshots?](https://cloudranger.com/ami-or-ebs-snapshots/)
+- [Where are my Amazon EBS snapshots stored?](https://cloudranger.com/amazon-ebs-snapshots-stored/)
