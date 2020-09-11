@@ -2,6 +2,12 @@
 
 AWS ECS tutorials. ECS has two launch types: EC2 and Fargate. Fargate is fully managed container orchestration service which is more favourable solution.
 
+### TL;DR
+
+See this hand on _terraform-ed_ AWS ECS Fargate mini stack for a **Django web application** + **Django Celery workers** + **Nginx** for serving static files and media content.
+
+- https://github.com/victorskl/panelapp/tree/feat/23/terraform/terraform
+
 ### what is required to run app in ECS Fargate?
 
 0. [Setting Up with Amazon ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/get-set-up-for-amazon-ecs.html)
@@ -37,14 +43,15 @@ AWS ECS tutorials. ECS has two launch types: EC2 and Fargate. Fargate is fully m
 
 
 ### write-your-own-ecs-module
-_By nature, containerisation is unique to application specific. It is norm that terraform-ing ECS is context-aware and, opinionated to how application is being containerised to run. Therefore, it ends up [WET principal](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) i.e. write-your-own-ecs-module approach better fit the bill; instead of re-using someone else "ecs" module!_
+
+> _By nature, containerisation is unique to each application and, specific to application's dependant backend services such as Queue, Sendmail, Database, so on. Hence, it is norm that terraform-ing ECS is specific to application context and, opinionated to how an application is being containerised to run. So, it ends up [WET principal](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) i.e. write-your-own-ecs-module approach is better fit for the bill; instead of re-using someone else "ecs" module!_
 
 - https://www.terraform.io/docs/providers/aws/r/ecs_cluster.html
 - https://www.terraform.io/docs/providers/aws/r/ecs_task_definition.html
 - https://www.terraform.io/docs/providers/aws/r/ecs_service.html
 
 
----
+## Other tutes
 
 ### ECS with ALB example
 
@@ -140,7 +147,9 @@ docker run -p 3000:3000 -it --rm --name cbapp bradfordhamilton/crystal_blockchai
 
 - https://github.com/alex/ecs-terraform
 
----
+## Footnotes
+
+> All `git submodule` are read only or pull only from respective repo default branch.
 
 Update submodule
 
