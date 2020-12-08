@@ -14,12 +14,18 @@ One way to keep multiple terraform versions on masOS [with brew](https://formula
 
 ```
 brew info terraform
+brew info terraform@0.13
 brew info terraform@0.12
 brew info terraform@0.11
 
 brew install terraform
 terraform version
-Terraform v0.13.2
+Terraform v0.14.0
+
+brew install terraform@0.13
+alias terraform3="/usr/local/opt/terraform@0.13/bin/terraform"
+terraform3 version
+Terraform v0.13.5
 
 brew install terraform@0.12
 alias terraform2="/usr/local/opt/terraform@0.12/bin/terraform"
