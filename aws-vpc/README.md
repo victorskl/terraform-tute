@@ -14,6 +14,10 @@ Do [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) unless necessary
 - https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws
 - https://github.com/terraform-aws-modules/terraform-aws-vpc
 
+### Example
+
+- https://github.com/umccr/infrastructure/tree/master/terraform/stacks/networking
+
 ### aws-default-vpc
 
 - https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html
